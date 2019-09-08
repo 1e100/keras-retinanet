@@ -20,7 +20,7 @@ import argparse
 import os
 import sys
 
-import keras
+import tensorflow.keras
 import tensorflow as tf
 
 # Allow relative imports when being executed as script.

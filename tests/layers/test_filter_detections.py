@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import keras
+import tensorflow.keras
 import keras_retinanet.layers
 
 import numpy as np

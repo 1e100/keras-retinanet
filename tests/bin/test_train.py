@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import keras_retinanet.bin.train
-import keras.backend
+import tensorflow.keras.backend
 
 import warnings
 
@@ -27,7 +27,7 @@ def clear_session():
     # run before test (do nothing)
     yield
     # run after test, clear keras session
-    keras.backend.clear_session()
+    tensorflow.keras.backend.clear_session()
 
 
 def test_coco():

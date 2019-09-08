@@ -16,7 +16,7 @@ limitations under the License.
 
 import configparser
 import numpy as np
-import keras
+import tensorflow.keras
 from ..utils.anchors import AnchorParameters
 
 
