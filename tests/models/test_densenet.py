@@ -21,18 +21,21 @@ import tensorflow.keras
 from keras_retinanet import losses
 from keras_retinanet.models.densenet import DenseNetBackbone
 
-parameters = ['densenet121']
+parameters = ["densenet121"]
 
 
 @pytest.mark.parametrize("backbone", parameters)
 def test_backbone(backbone):
     # ignore warnings in this test
-    warnings.simplefilter('ignore')
+    warnings.simplefilter("ignore")
 
     num_classes = 10
 
     inputs = np.zeros((1, 200, 400, 3), dtype=np.float32)
-    targets = [np.zeros((1, 14814, 5), dtype=np.float32), np.zeros((1, 14814, num_classes + 1))]
+    targets = [
+        np.zeros((1, 14814, 5), dtype=np.float32),
+        np.zeros((1, 14814, num_classes + 1)),
+    ]
 
     inp = keras.layers.Input(inputs[0].shape)
 
@@ -42,10 +45,8 @@ def test_backbone(backbone):
 
     # compile model
     model.compile(
-        loss={
-            'regression': losses.smooth_l1(),
-            'classification': losses.focal()
-        },
-        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001))
+        loss={"regression": losses.smooth_l1(), "classification": losses.focal()},
+        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001),
+    )
 
     model.fit(inputs, targets, batch_size=1)

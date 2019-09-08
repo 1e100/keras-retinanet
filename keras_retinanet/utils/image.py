@@ -29,11 +29,11 @@ def read_image_bgr(path):
         path: Path to the image.
     """
     # We deliberately don't use cv2.imread here, since it gives no feedback on errors while reading the image.
-    image = np.asarray(Image.open(path).convert('RGB'))
+    image = np.asarray(Image.open(path).convert("RGB"))
     return image[:, :, ::-1].copy()
 
 
-def preprocess_image(x, mode='caffe'):
+def preprocess_image(x, mode="caffe"):
     """ Preprocess an image by subtracting the ImageNet mean.
 
     Args
@@ -52,10 +52,10 @@ def preprocess_image(x, mode='caffe'):
     # covert always to float32 to keep compatibility with opencv
     x = x.astype(np.float32)
 
-    if mode == 'tf':
+    if mode == "tf":
         x /= 127.5
-        x -= 1.
-    elif mode == 'caffe':
+        x -= 1.0
+    elif mode == "caffe":
         x[..., 0] -= 103.939
         x[..., 1] -= 116.779
         x[..., 2] -= 123.68
@@ -93,38 +93,39 @@ class TransformParameters:
         relative_translation:  If true (the default), interpret translation as a factor of the image size.
                                If false, interpret it as absolute pixels.
     """
+
     def __init__(
         self,
-        fill_mode            = 'nearest',
-        interpolation        = 'linear',
-        cval                 = 0,
-        relative_translation = True,
+        fill_mode="nearest",
+        interpolation="linear",
+        cval=0,
+        relative_translation=True,
     ):
-        self.fill_mode            = fill_mode
-        self.cval                 = cval
-        self.interpolation        = interpolation
+        self.fill_mode = fill_mode
+        self.cval = cval
+        self.interpolation = interpolation
         self.relative_translation = relative_translation
 
     def cvBorderMode(self):
-        if self.fill_mode == 'constant':
+        if self.fill_mode == "constant":
             return cv2.BORDER_CONSTANT
-        if self.fill_mode == 'nearest':
+        if self.fill_mode == "nearest":
             return cv2.BORDER_REPLICATE
-        if self.fill_mode == 'reflect':
+        if self.fill_mode == "reflect":
             return cv2.BORDER_REFLECT_101
-        if self.fill_mode == 'wrap':
+        if self.fill_mode == "wrap":
             return cv2.BORDER_WRAP
 
     def cvInterpolation(self):
-        if self.interpolation == 'nearest':
+        if self.interpolation == "nearest":
             return cv2.INTER_NEAREST
-        if self.interpolation == 'linear':
+        if self.interpolation == "linear":
             return cv2.INTER_LINEAR
-        if self.interpolation == 'cubic':
+        if self.interpolation == "cubic":
             return cv2.INTER_CUBIC
-        if self.interpolation == 'area':
+        if self.interpolation == "area":
             return cv2.INTER_AREA
-        if self.interpolation == 'lanczos4':
+        if self.interpolation == "lanczos4":
             return cv2.INTER_LANCZOS4
 
 
@@ -145,10 +146,10 @@ def apply_transform(matrix, image, params):
     output = cv2.warpAffine(
         image,
         matrix[:2, :],
-        dsize       = (image.shape[1], image.shape[0]),
-        flags       = params.cvInterpolation(),
-        borderMode  = params.cvBorderMode(),
-        borderValue = params.cval,
+        dsize=(image.shape[1], image.shape[0]),
+        flags=params.cvInterpolation(),
+        borderMode=params.cvBorderMode(),
+        borderValue=params.cval,
     )
     return output
 
@@ -216,11 +217,11 @@ def _check_range(val_range, min_val=None, max_val=None):
         max_val: Maximal value for the upper bound.
     """
     if val_range[0] > val_range[1]:
-        raise ValueError('interval lower bound > upper bound')
+        raise ValueError("interval lower bound > upper bound")
     if min_val is not None and val_range[0] < min_val:
-        raise ValueError('invalid interval lower bound')
+        raise ValueError("invalid interval lower bound")
     if max_val is not None and val_range[1] > max_val:
-        raise ValueError('invalid interval upper bound')
+        raise ValueError("invalid interval upper bound")
 
 
 def _clip(image):
@@ -243,13 +244,7 @@ class VisualEffect:
         saturation_factor: A factor multiplying the saturation values of each pixel.
     """
 
-    def __init__(
-        self,
-        contrast_factor,
-        brightness_delta,
-        hue_delta,
-        saturation_factor,
-    ):
+    def __init__(self, contrast_factor, brightness_delta, hue_delta, saturation_factor):
         self.contrast_factor = contrast_factor
         self.brightness_delta = brightness_delta
         self.hue_delta = hue_delta
@@ -283,9 +278,9 @@ class VisualEffect:
 
 def random_visual_effect_generator(
     contrast_range=(0.9, 1.1),
-    brightness_range=(-.1, .1),
+    brightness_range=(-0.1, 0.1),
     hue_range=(-0.05, 0.05),
-    saturation_range=(0.95, 1.05)
+    saturation_range=(0.95, 1.05),
 ):
     """ Generate visual effect parameters uniformly sampled from the given intervals.
 
@@ -354,5 +349,5 @@ def adjust_saturation(image, factor):
         image: Image to adjust.
         factor: An interval for the factor multiplying the saturation values of each pixel.
     """
-    image[..., 1] = np.clip(image[..., 1] * factor, 0 , 255)
+    image[..., 1] = np.clip(image[..., 1] * factor, 0, 255)
     return image

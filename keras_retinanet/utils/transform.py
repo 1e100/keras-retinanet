@@ -41,11 +41,7 @@ def transform_aabb(transform, aabb):
     """
     x1, y1, x2, y2 = aabb
     # Transform all 4 corners of the AABB.
-    points = transform.dot([
-        [x1, x2, x1, x2],
-        [y1, y2, y2, y1],
-        [1,  1,  1,  1 ],
-    ])
+    points = transform.dot([[x1, x2, x1, x2], [y1, y2, y2, y1], [1, 1, 1, 1]])
 
     # Extract the min and max corners again.
     min_corner = points.min(axis=1)
@@ -74,11 +70,13 @@ def rotation(angle):
     Returns
         the rotation matrix as 3 by 3 numpy array
     """
-    return np.array([
-        [np.cos(angle), -np.sin(angle), 0],
-        [np.sin(angle),  np.cos(angle), 0],
-        [0, 0, 1]
-    ])
+    return np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0],
+            [np.sin(angle), np.cos(angle), 0],
+            [0, 0, 1],
+        ]
+    )
 
 
 def random_rotation(min, max, prng=DEFAULT_PRNG):
@@ -100,11 +98,7 @@ def translation(translation):
     # Returns
         the translation matrix as 3 by 3 numpy array
     """
-    return np.array([
-        [1, 0, translation[0]],
-        [0, 1, translation[1]],
-        [0, 0, 1]
-    ])
+    return np.array([[1, 0, translation[0]], [0, 1, translation[1]], [0, 0, 1]])
 
 
 def random_translation(min, max, prng=DEFAULT_PRNG):
@@ -126,11 +120,7 @@ def shear(angle):
     Returns
         the shear matrix as 3 by 3 numpy array
     """
-    return np.array([
-        [1, -np.sin(angle), 0],
-        [0,  np.cos(angle), 0],
-        [0, 0, 1]
-    ])
+    return np.array([[1, -np.sin(angle), 0], [0, np.cos(angle), 0], [0, 0, 1]])
 
 
 def random_shear(min, max, prng=DEFAULT_PRNG):
@@ -152,11 +142,7 @@ def scaling(factor):
     Returns
         the zoom matrix as 3 by 3 numpy array
     """
-    return np.array([
-        [factor[0], 0, 0],
-        [0, factor[1], 0],
-        [0, 0, 1]
-    ])
+    return np.array([[factor[0], 0, 0], [0, factor[1], 0], [0, 0, 1]])
 
 
 def random_scaling(min, max, prng=DEFAULT_PRNG):
@@ -210,7 +196,7 @@ def random_transform(
     max_scaling=(1, 1),
     flip_x_chance=0,
     flip_y_chance=0,
-    prng=DEFAULT_PRNG
+    prng=DEFAULT_PRNG,
 ):
     """ Create a random transformation.
 
@@ -240,13 +226,15 @@ def random_transform(
         flip_y_chance:   The chance (0 to 1) that a transform will contain a flip along Y direction.
         prng:            The pseudo-random number generator to use.
     """
-    return np.linalg.multi_dot([
-        random_rotation(min_rotation, max_rotation, prng),
-        random_translation(min_translation, max_translation, prng),
-        random_shear(min_shear, max_shear, prng),
-        random_scaling(min_scaling, max_scaling, prng),
-        random_flip(flip_x_chance, flip_y_chance, prng)
-    ])
+    return np.linalg.multi_dot(
+        [
+            random_rotation(min_rotation, max_rotation, prng),
+            random_translation(min_translation, max_translation, prng),
+            random_shear(min_shear, max_shear, prng),
+            random_scaling(min_scaling, max_scaling, prng),
+            random_flip(flip_x_chance, flip_y_chance, prng),
+        ]
+    )
 
 
 def random_transform_generator(prng=None, **kwargs):

@@ -42,8 +42,12 @@ def draw_caption(image, box, caption):
         caption : String containing the text to draw.
     """
     b = np.array(box).astype(int)
-    cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 2)
-    cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+    cv2.putText(
+        image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 2
+    )
+    cv2.putText(
+        image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1
+    )
 
 
 def draw_boxes(image, boxes, color, thickness=2):
@@ -59,7 +63,9 @@ def draw_boxes(image, boxes, color, thickness=2):
         draw_box(image, b, color, thickness=thickness)
 
 
-def draw_detections(image, boxes, scores, labels, color=None, label_to_name=None, score_threshold=0.5):
+def draw_detections(
+    image, boxes, scores, labels, color=None, label_to_name=None, score_threshold=0.5
+):
     """ Draws detections in an image.
 
     # Arguments
@@ -78,7 +84,9 @@ def draw_detections(image, boxes, scores, labels, color=None, label_to_name=None
         draw_box(image, boxes[i, :], color=c)
 
         # draw labels
-        caption = (label_to_name(labels[i]) if label_to_name else labels[i]) + ': {0:.2f}'.format(scores[i])
+        caption = (
+            label_to_name(labels[i]) if label_to_name else labels[i]
+        ) + ": {0:.2f}".format(scores[i])
         draw_caption(image, boxes[i, :], caption)
 
 
@@ -92,15 +100,15 @@ def draw_annotations(image, annotations, color=(0, 255, 0), label_to_name=None):
         label_to_name : (optional) Functor for mapping a label to a name.
     """
     if isinstance(annotations, np.ndarray):
-        annotations = {'bboxes': annotations[:, :4], 'labels': annotations[:, 4]}
+        annotations = {"bboxes": annotations[:, :4], "labels": annotations[:, 4]}
 
-    assert('bboxes' in annotations)
-    assert('labels' in annotations)
-    assert(annotations['bboxes'].shape[0] == annotations['labels'].shape[0])
+    assert "bboxes" in annotations
+    assert "labels" in annotations
+    assert annotations["bboxes"].shape[0] == annotations["labels"].shape[0]
 
-    for i in range(annotations['bboxes'].shape[0]):
-        label   = annotations['labels'][i]
-        c       = color if color is not None else label_color(label)
-        caption = '{}'.format(label_to_name(label) if label_to_name else label)
-        draw_caption(image, annotations['bboxes'][i], caption)
-        draw_box(image, annotations['bboxes'][i], color=c)
+    for i in range(annotations["bboxes"].shape[0]):
+        label = annotations["labels"][i]
+        c = color if color is not None else label_color(label)
+        caption = "{}".format(label_to_name(label) if label_to_name else label)
+        draw_caption(image, annotations["bboxes"][i], caption)
+        draw_box(image, annotations["bboxes"][i], color=c)

@@ -16,9 +16,7 @@ class RedirectModel(keras.callbacks.Callback):
         model    : model to use when executing callbacks.
     """
 
-    def __init__(self,
-                 callback,
-                 model):
+    def __init__(self, callback, model):
         super(RedirectModel, self).__init__()
 
         self.callback = callback

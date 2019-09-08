@@ -21,7 +21,7 @@ import tensorflow.keras
 from keras_retinanet import losses
 from keras_retinanet.models.mobilenet import MobileNetBackbone
 
-alphas = ['1.0']
+alphas = ["1.0"]
 parameters = []
 
 for backbone in MobileNetBackbone.allowed_backbones:
@@ -32,25 +32,28 @@ for backbone in MobileNetBackbone.allowed_backbones:
 @pytest.mark.parametrize("backbone, alpha", parameters)
 def test_backbone(backbone, alpha):
     # ignore warnings in this test
-    warnings.simplefilter('ignore')
+    warnings.simplefilter("ignore")
 
     num_classes = 10
 
     inputs = np.zeros((1, 1024, 363, 3), dtype=np.float32)
-    targets = [np.zeros((1, 68760, 5), dtype=np.float32), np.zeros((1, 68760, num_classes + 1))]
+    targets = [
+        np.zeros((1, 68760, 5), dtype=np.float32),
+        np.zeros((1, 68760, num_classes + 1)),
+    ]
 
     inp = keras.layers.Input(inputs[0].shape)
 
-    mobilenet_backbone = MobileNetBackbone(backbone='{}_{}'.format(backbone, format(alpha)))
+    mobilenet_backbone = MobileNetBackbone(
+        backbone="{}_{}".format(backbone, format(alpha))
+    )
     training_model = mobilenet_backbone.retinanet(num_classes=num_classes, inputs=inp)
     training_model.summary()
 
     # compile model
     training_model.compile(
-        loss={
-            'regression': losses.smooth_l1(),
-            'classification': losses.focal()
-        },
-        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001))
+        loss={"regression": losses.smooth_l1(), "classification": losses.focal()},
+        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001),
+    )
 
     training_model.fit(inputs, targets, batch_size=1)

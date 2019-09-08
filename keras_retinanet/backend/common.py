@@ -39,7 +39,7 @@ def bbox_transform_inv(boxes, deltas, mean=None, std=None):
     if std is None:
         std = [0.2, 0.2, 0.2, 0.2]
 
-    width  = boxes[:, :, 2] - boxes[:, :, 0]
+    width = boxes[:, :, 2] - boxes[:, :, 0]
     height = boxes[:, :, 3] - boxes[:, :, 1]
 
     x1 = boxes[:, :, 0] + (deltas[:, :, 0] * std[0] + mean[0]) * width
@@ -60,26 +60,46 @@ def shift(shape, stride, anchors):
         stride : Stride to shift the anchors with over the shape.
         anchors: The anchors to apply at each location.
     """
-    shift_x = (tensorflow.keras.backend.arange(0, shape[1], dtype=tensorflow.keras.backend.floatx()) + tensorflow.keras.backend.constant(0.5, dtype=tensorflow.keras.backend.floatx())) * stride
-    shift_y = (tensorflow.keras.backend.arange(0, shape[0], dtype=tensorflow.keras.backend.floatx()) + tensorflow.keras.backend.constant(0.5, dtype=tensorflow.keras.backend.floatx())) * stride
+    shift_x = (
+        tensorflow.keras.backend.arange(
+            0, shape[1], dtype=tensorflow.keras.backend.floatx()
+        )
+        + tensorflow.keras.backend.constant(
+            0.5, dtype=tensorflow.keras.backend.floatx()
+        )
+    ) * stride
+    shift_y = (
+        tensorflow.keras.backend.arange(
+            0, shape[0], dtype=tensorflow.keras.backend.floatx()
+        )
+        + tensorflow.keras.backend.constant(
+            0.5, dtype=tensorflow.keras.backend.floatx()
+        )
+    ) * stride
 
     shift_x, shift_y = meshgrid(shift_x, shift_y)
     shift_x = tensorflow.keras.backend.reshape(shift_x, [-1])
     shift_y = tensorflow.keras.backend.reshape(shift_y, [-1])
 
-    shifts = tensorflow.keras.backend.stack([
-        shift_x,
-        shift_y,
-        shift_x,
-        shift_y
-    ], axis=0)
+    shifts = tensorflow.keras.backend.stack(
+        [shift_x, shift_y, shift_x, shift_y], axis=0
+    )
 
-    shifts            = tensorflow.keras.backend.transpose(shifts)
+    shifts = tensorflow.keras.backend.transpose(shifts)
     number_of_anchors = tensorflow.keras.backend.shape(anchors)[0]
 
-    k = tensorflow.keras.backend.shape(shifts)[0]  # number of base points = feat_h * feat_w
+    k = tensorflow.keras.backend.shape(shifts)[
+        0
+    ]  # number of base points = feat_h * feat_w
 
-    shifted_anchors = tensorflow.keras.backend.reshape(anchors, [1, number_of_anchors, 4]) + tensorflow.keras.backend.cast(tensorflow.keras.backend.reshape(shifts, [k, 1, 4]), tensorflow.keras.backend.floatx())
-    shifted_anchors = tensorflow.keras.backend.reshape(shifted_anchors, [k * number_of_anchors, 4])
+    shifted_anchors = tensorflow.keras.backend.reshape(
+        anchors, [1, number_of_anchors, 4]
+    ) + tensorflow.keras.backend.cast(
+        tensorflow.keras.backend.reshape(shifts, [k, 1, 4]),
+        tensorflow.keras.backend.floatx(),
+    )
+    shifted_anchors = tensorflow.keras.backend.reshape(
+        shifted_anchors, [k * number_of_anchors, 4]
+    )
 
     return shifted_anchors

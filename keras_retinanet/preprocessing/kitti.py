@@ -24,15 +24,15 @@ from .generator import Generator
 from ..utils.image import read_image_bgr
 
 kitti_classes = {
-    'Car': 0,
-    'Van': 1,
-    'Truck': 2,
-    'Pedestrian': 3,
-    'Person_sitting': 4,
-    'Cyclist': 5,
-    'Tram': 6,
-    'Misc': 7,
-    'DontCare': 7
+    "Car": 0,
+    "Van": 1,
+    "Truck": 2,
+    "Pedestrian": 3,
+    "Person_sitting": 4,
+    "Cyclist": 5,
+    "Tram": 6,
+    "Misc": 7,
+    "DontCare": 7,
 }
 
 
@@ -42,12 +42,7 @@ class KittiGenerator(Generator):
     See http://www.cvlibs.net/datasets/kitti/ for more information.
     """
 
-    def __init__(
-        self,
-        base_dir,
-        subset='train',
-        **kwargs
-    ):
+    def __init__(self, base_dir, subset="train", **kwargs):
         """ Initialize a KITTI data generator.
 
         Args
@@ -56,8 +51,8 @@ class KittiGenerator(Generator):
         """
         self.base_dir = base_dir
 
-        label_dir = os.path.join(self.base_dir, subset, 'labels')
-        image_dir = os.path.join(self.base_dir, subset, 'images')
+        label_dir = os.path.join(self.base_dir, subset, "labels")
+        image_dir = os.path.join(self.base_dir, subset, "images")
 
         """
         1    type         Describes the type of object: 'Car', 'Van', 'Truck',
@@ -85,20 +80,41 @@ class KittiGenerator(Generator):
         self.images = []
         for i, fn in enumerate(os.listdir(label_dir)):
             label_fp = os.path.join(label_dir, fn)
-            image_fp = os.path.join(image_dir, fn.replace('.txt', '.png'))
+            image_fp = os.path.join(image_dir, fn.replace(".txt", ".png"))
 
             self.images.append(image_fp)
 
-            fieldnames = ['type', 'truncated', 'occluded', 'alpha', 'left', 'top', 'right', 'bottom', 'dh', 'dw', 'dl',
-                          'lx', 'ly', 'lz', 'ry']
-            with open(label_fp, 'r') as csv_file:
-                reader = csv.DictReader(csv_file, delimiter=' ', fieldnames=fieldnames)
+            fieldnames = [
+                "type",
+                "truncated",
+                "occluded",
+                "alpha",
+                "left",
+                "top",
+                "right",
+                "bottom",
+                "dh",
+                "dw",
+                "dl",
+                "lx",
+                "ly",
+                "lz",
+                "ry",
+            ]
+            with open(label_fp, "r") as csv_file:
+                reader = csv.DictReader(csv_file, delimiter=" ", fieldnames=fieldnames)
                 boxes = []
                 for line, row in enumerate(reader):
-                    label = row['type']
+                    label = row["type"]
                     cls_id = kitti_classes[label]
 
-                    annotation = {'cls_id': cls_id, 'x1': row['left'], 'x2': row['right'], 'y2': row['bottom'], 'y1': row['top']}
+                    annotation = {
+                        "cls_id": cls_id,
+                        "x1": row["left"],
+                        "x2": row["right"],
+                        "y2": row["bottom"],
+                        "y1": row["top"],
+                    }
                     boxes.append(annotation)
 
                 self.image_data[i] = boxes
@@ -151,13 +167,16 @@ class KittiGenerator(Generator):
         """ Load annotations for an image_index.
         """
         image_data = self.image_data[image_index]
-        annotations = {'labels': np.empty((len(image_data),)), 'bboxes': np.empty((len(image_data), 4))}
+        annotations = {
+            "labels": np.empty((len(image_data),)),
+            "bboxes": np.empty((len(image_data), 4)),
+        }
 
         for idx, ann in enumerate(image_data):
-            annotations['bboxes'][idx, 0] = float(ann['x1'])
-            annotations['bboxes'][idx, 1] = float(ann['y1'])
-            annotations['bboxes'][idx, 2] = float(ann['x2'])
-            annotations['bboxes'][idx, 3] = float(ann['y2'])
-            annotations['labels'][idx] = int(ann['cls_id'])
+            annotations["bboxes"][idx, 0] = float(ann["x1"])
+            annotations["bboxes"][idx, 1] = float(ann["y1"])
+            annotations["bboxes"][idx, 2] = float(ann["x2"])
+            annotations["bboxes"][idx, 3] = float(ann["y2"])
+            annotations["labels"][idx] = int(ann["cls_id"])
 
         return annotations

@@ -26,21 +26,23 @@ class TestFilterDetections(object):
         filter_detections_layer = keras_retinanet.layers.FilterDetections()
 
         # create simple input
-        boxes = np.array([[
-            [0, 0, 10, 10],
-            [0, 0, 10, 10],  # this will be suppressed
-        ]], dtype=keras.backend.floatx())
+        boxes = np.array(
+            [[[0, 0, 10, 10], [0, 0, 10, 10]]],  # this will be suppressed
+            dtype=keras.backend.floatx(),
+        )
         boxes = keras.backend.constant(boxes)
 
-        classification = np.array([[
-            [0, 0.9],  # this will be suppressed
-            [0, 1],
-        ]], dtype=keras.backend.floatx())
+        classification = np.array(
+            [[[0, 0.9], [0, 1]]],  # this will be suppressed
+            dtype=keras.backend.floatx(),
+        )
         classification = keras.backend.constant(classification)
 
         # compute output
-        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification])
-        actual_boxes  = keras.backend.eval(actual_boxes)
+        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call(
+            [boxes, classification]
+        )
+        actual_boxes = keras.backend.eval(actual_boxes)
         actual_scores = keras.backend.eval(actual_scores)
         actual_labels = keras.backend.eval(actual_labels)
 
@@ -64,35 +66,38 @@ class TestFilterDetections(object):
         filter_detections_layer = keras_retinanet.layers.FilterDetections()
 
         # create simple input
-        boxes = np.array([[
-            [0, 0, 10, 10],
-            [0, 0, 10, 10],  # this will be suppressed
-        ]], dtype=keras.backend.floatx())
+        boxes = np.array(
+            [[[0, 0, 10, 10], [0, 0, 10, 10]]],  # this will be suppressed
+            dtype=keras.backend.floatx(),
+        )
         boxes = keras.backend.constant(boxes)
 
-        classification = np.array([[
-            [0, 0.9],  # this will be suppressed
-            [0, 1],
-        ]], dtype=keras.backend.floatx())
+        classification = np.array(
+            [[[0, 0.9], [0, 1]]],  # this will be suppressed
+            dtype=keras.backend.floatx(),
+        )
         classification = keras.backend.constant(classification)
 
         other = []
-        other.append(np.array([[
-            [0, 1234],  # this will be suppressed
-            [0, 5678],
-        ]], dtype=keras.backend.floatx()))
-        other.append(np.array([[
-            5678,  # this will be suppressed
-            1234,
-        ]], dtype=keras.backend.floatx()))
+        other.append(
+            np.array(
+                [[[0, 1234], [0, 5678]]],  # this will be suppressed
+                dtype=keras.backend.floatx(),
+            )
+        )
+        other.append(
+            np.array(
+                [[5678, 1234]], dtype=keras.backend.floatx()  # this will be suppressed
+            )
+        )
         other = [keras.backend.constant(o) for o in other]
 
         # compute output
         actual = filter_detections_layer.call([boxes, classification] + other)
-        actual_boxes  = keras.backend.eval(actual[0])
+        actual_boxes = keras.backend.eval(actual[0])
         actual_scores = keras.backend.eval(actual[1])
         actual_labels = keras.backend.eval(actual[2])
-        actual_other  = [keras.backend.eval(a) for a in actual[3:]]
+        actual_other = [keras.backend.eval(a) for a in actual[3:]]
 
         # define expected output
         expected_boxes = -1 * np.ones((1, 300, 4), dtype=keras.backend.floatx())
@@ -123,33 +128,29 @@ class TestFilterDetections(object):
         filter_detections_layer = keras_retinanet.layers.FilterDetections()
 
         # create input with batch_size=2
-        boxes = np.array([
+        boxes = np.array(
             [
-                [0, 0, 10, 10],  # this will be suppressed
-                [0, 0, 10, 10],
+                [[0, 0, 10, 10], [0, 0, 10, 10]],  # this will be suppressed
+                [[100, 100, 150, 150], [100, 100, 150, 150]],  # this will be suppressed
             ],
-            [
-                [100, 100, 150, 150],
-                [100, 100, 150, 150],  # this will be suppressed
-            ],
-        ], dtype=keras.backend.floatx())
+            dtype=keras.backend.floatx(),
+        )
         boxes = keras.backend.constant(boxes)
 
-        classification = np.array([
+        classification = np.array(
             [
-                [0, 0.9],  # this will be suppressed
-                [0, 1],
+                [[0, 0.9], [0, 1]],  # this will be suppressed
+                [[1, 0], [0.9, 0]],  # this will be suppressed
             ],
-            [
-                [1,   0],
-                [0.9, 0],  # this will be suppressed
-            ],
-        ], dtype=keras.backend.floatx())
+            dtype=keras.backend.floatx(),
+        )
         classification = keras.backend.constant(classification)
 
         # compute output
-        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification])
-        actual_boxes  = keras.backend.eval(actual_boxes)
+        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call(
+            [boxes, classification]
+        )
+        actual_boxes = keras.backend.eval(actual_boxes)
         actual_scores = keras.backend.eval(actual_scores)
         actual_labels = keras.backend.eval(actual_labels)
 

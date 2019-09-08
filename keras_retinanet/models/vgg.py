@@ -36,37 +36,41 @@ class VGGBackbone(Backbone):
         """ Downloads ImageNet weights and returns path to weights file.
         Weights can be downloaded at https://github.com/fizyr/keras-models/releases .
         """
-        if self.backbone == 'vgg16':
+        if self.backbone == "vgg16":
             resource = keras.applications.vgg16.vgg16.WEIGHTS_PATH_NO_TOP
-            checksum = '6d6bbae143d832006294945121d1f1fc'
-        elif self.backbone == 'vgg19':
+            checksum = "6d6bbae143d832006294945121d1f1fc"
+        elif self.backbone == "vgg19":
             resource = keras.applications.vgg19.vgg19.WEIGHTS_PATH_NO_TOP
-            checksum = '253f8cb515780f3b799900260a226db6'
+            checksum = "253f8cb515780f3b799900260a226db6"
         else:
             raise ValueError("Backbone '{}' not recognized.".format(self.backbone))
 
         return get_file(
-            '{}_weights_tf_dim_ordering_tf_kernels_notop.h5'.format(self.backbone),
+            "{}_weights_tf_dim_ordering_tf_kernels_notop.h5".format(self.backbone),
             resource,
-            cache_subdir='models',
-            file_hash=checksum
+            cache_subdir="models",
+            file_hash=checksum,
         )
 
     def validate(self):
         """ Checks whether the backbone string is correct.
         """
-        allowed_backbones = ['vgg16', 'vgg19']
+        allowed_backbones = ["vgg16", "vgg19"]
 
         if self.backbone not in allowed_backbones:
-            raise ValueError('Backbone (\'{}\') not in allowed backbones ({}).'.format(self.backbone, allowed_backbones))
+            raise ValueError(
+                "Backbone ('{}') not in allowed backbones ({}).".format(
+                    self.backbone, allowed_backbones
+                )
+            )
 
     def preprocess_image(self, inputs):
         """ Takes as input an image and prepares it for being passed through the network.
         """
-        return preprocess_image(inputs, mode='caffe')
+        return preprocess_image(inputs, mode="caffe")
 
 
-def vgg_retinanet(num_classes, backbone='vgg16', inputs=None, modifier=None, **kwargs):
+def vgg_retinanet(num_classes, backbone="vgg16", inputs=None, modifier=None, **kwargs):
     """ Constructs a retinanet model using a vgg backbone.
 
     Args
@@ -83,10 +87,14 @@ def vgg_retinanet(num_classes, backbone='vgg16', inputs=None, modifier=None, **k
         inputs = keras.layers.Input(shape=(None, None, 3))
 
     # create the vgg backbone
-    if backbone == 'vgg16':
-        vgg = keras.applications.VGG16(input_tensor=inputs, include_top=False, weights=None)
-    elif backbone == 'vgg19':
-        vgg = keras.applications.VGG19(input_tensor=inputs, include_top=False, weights=None)
+    if backbone == "vgg16":
+        vgg = keras.applications.VGG16(
+            input_tensor=inputs, include_top=False, weights=None
+        )
+    elif backbone == "vgg19":
+        vgg = keras.applications.VGG19(
+            input_tensor=inputs, include_top=False, weights=None
+        )
     else:
         raise ValueError("Backbone '{}' not recognized.".format(backbone))
 
@@ -96,4 +104,6 @@ def vgg_retinanet(num_classes, backbone='vgg16', inputs=None, modifier=None, **k
     # create the full model
     layer_names = ["block3_pool", "block4_pool", "block5_pool"]
     layer_outputs = [vgg.get_layer(name).output for name in layer_names]
-    return retinanet.retinanet(inputs=inputs, num_classes=num_classes, backbone_layers=layer_outputs, **kwargs)
+    return retinanet.retinanet(
+        inputs=inputs, num_classes=num_classes, backbone_layers=layer_outputs, **kwargs
+    )

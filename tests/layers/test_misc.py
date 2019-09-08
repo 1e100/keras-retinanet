@@ -39,12 +39,17 @@ class TestAnchors(object):
         anchors = keras.backend.eval(anchors)
 
         # expected anchor values
-        expected = np.array([[
-            [-12, -12, 20, 20],
-            [-4 , -12, 28, 20],
-            [-12, -4 , 20, 28],
-            [-4 , -4 , 28, 28],
-        ]], dtype=keras.backend.floatx())
+        expected = np.array(
+            [
+                [
+                    [-12, -12, 20, 20],
+                    [-4, -12, 28, 20],
+                    [-12, -4, 20, 28],
+                    [-4, -4, 28, 28],
+                ]
+            ],
+            dtype=keras.backend.floatx(),
+        )
 
         # test anchor values
         np.testing.assert_array_equal(anchors, expected)
@@ -68,12 +73,17 @@ class TestAnchors(object):
         anchors = keras.backend.eval(anchors)
 
         # expected anchor values
-        expected = np.array([[
-            [-12, -12, 20, 20],
-            [-4 , -12, 28, 20],
-            [-12, -4 , 20, 28],
-            [-4 , -4 , 28, 28],
-        ]], dtype=keras.backend.floatx())
+        expected = np.array(
+            [
+                [
+                    [-12, -12, 20, 20],
+                    [-4, -12, 28, 20],
+                    [-12, -4, 20, 28],
+                    [-4, -4, 28, 28],
+                ]
+            ],
+            dtype=keras.backend.floatx(),
+        )
         expected = np.tile(expected, (2, 1, 1))
 
         # test anchor values
@@ -86,11 +96,11 @@ class TestUpsampleLike(object):
         upsample_like_layer = keras_retinanet.layers.UpsampleLike()
 
         # create input source
-        source   = np.zeros((1, 2, 2, 1), dtype=keras.backend.floatx())
-        source   = keras.backend.variable(source)
-        target   = np.zeros((1, 5, 5, 1), dtype=keras.backend.floatx())
+        source = np.zeros((1, 2, 2, 1), dtype=keras.backend.floatx())
+        source = keras.backend.variable(source)
+        target = np.zeros((1, 5, 5, 1), dtype=keras.backend.floatx())
         expected = target
-        target   = keras.backend.variable(target)
+        target = keras.backend.variable(target)
 
         # compute output
         actual = upsample_like_layer.call([source, target])
@@ -106,9 +116,9 @@ class TestUpsampleLike(object):
         source = np.zeros((2, 2, 2, 1), dtype=keras.backend.floatx())
         source = keras.backend.variable(source)
 
-        target   = np.zeros((2, 5, 5, 1), dtype=keras.backend.floatx())
+        target = np.zeros((2, 5, 5, 1), dtype=keras.backend.floatx())
         expected = target
-        target   = keras.backend.variable(target)
+        target = keras.backend.variable(target)
 
         # compute output
         actual = upsample_like_layer.call([source, target])
@@ -120,24 +130,22 @@ class TestUpsampleLike(object):
 class TestRegressBoxes(object):
     def test_simple(self):
         mean = [0, 0, 0, 0]
-        std  = [0.2, 0.2, 0.2, 0.2]
+        std = [0.2, 0.2, 0.2, 0.2]
 
         # create simple RegressBoxes layer
         regress_boxes_layer = keras_retinanet.layers.RegressBoxes(mean=mean, std=std)
 
         # create input
-        anchors = np.array([[
-            [0 , 0 , 10 , 10 ],
-            [50, 50, 100, 100],
-            [20, 20, 40 , 40 ],
-        ]], dtype=keras.backend.floatx())
+        anchors = np.array(
+            [[[0, 0, 10, 10], [50, 50, 100, 100], [20, 20, 40, 40]]],
+            dtype=keras.backend.floatx(),
+        )
         anchors = keras.backend.variable(anchors)
 
-        regression = np.array([[
-            [0  , 0  , 0  , 0  ],
-            [0.1, 0.1, 0  , 0  ],
-            [0  , 0  , 0.1, 0.1],
-        ]], dtype=keras.backend.floatx())
+        regression = np.array(
+            [[[0, 0, 0, 0], [0.1, 0.1, 0, 0], [0, 0, 0.1, 0.1]]],
+            dtype=keras.backend.floatx(),
+        )
         regression = keras.backend.variable(regression)
 
         # compute output
@@ -145,49 +153,38 @@ class TestRegressBoxes(object):
         actual = keras.backend.eval(actual)
 
         # compute expected output
-        expected = np.array([[
-            [0 , 0 , 10  , 10  ],
-            [51, 51, 100 , 100 ],
-            [20, 20, 40.4, 40.4],
-        ]], dtype=keras.backend.floatx())
+        expected = np.array(
+            [[[0, 0, 10, 10], [51, 51, 100, 100], [20, 20, 40.4, 40.4]]],
+            dtype=keras.backend.floatx(),
+        )
 
         np.testing.assert_array_almost_equal(actual, expected, decimal=2)
 
     # mark test to fail
     def test_mini_batch(self):
         mean = [0, 0, 0, 0]
-        std  = [0.2, 0.2, 0.2, 0.2]
+        std = [0.2, 0.2, 0.2, 0.2]
 
         # create simple RegressBoxes layer
         regress_boxes_layer = keras_retinanet.layers.RegressBoxes(mean=mean, std=std)
 
         # create input
-        anchors = np.array([
+        anchors = np.array(
             [
-                [0 , 0 , 10 , 10 ],  # 1
-                [50, 50, 100, 100],  # 2
-                [20, 20, 40 , 40 ],  # 3
+                [[0, 0, 10, 10], [50, 50, 100, 100], [20, 20, 40, 40]],  # 1  # 2  # 3
+                [[20, 20, 40, 40], [0, 0, 10, 10], [50, 50, 100, 100]],  # 3  # 1  # 2
             ],
-            [
-                [20, 20, 40 , 40 ],  # 3
-                [0 , 0 , 10 , 10 ],  # 1
-                [50, 50, 100, 100],  # 2
-            ],
-        ], dtype=keras.backend.floatx())
+            dtype=keras.backend.floatx(),
+        )
         anchors = keras.backend.variable(anchors)
 
-        regression = np.array([
+        regression = np.array(
             [
-                [0  , 0  , 0  , 0  ],  # 1
-                [0.1, 0.1, 0  , 0  ],  # 2
-                [0  , 0  , 0.1, 0.1],  # 3
+                [[0, 0, 0, 0], [0.1, 0.1, 0, 0], [0, 0, 0.1, 0.1]],  # 1  # 2  # 3
+                [[0, 0, 0.1, 0.1], [0, 0, 0, 0], [0.1, 0.1, 0, 0]],  # 3  # 1  # 2
             ],
-            [
-                [0  , 0  , 0.1, 0.1],  # 3
-                [0  , 0  , 0  , 0  ],  # 1
-                [0.1, 0.1, 0  , 0  ],  # 2
-            ],
-        ], dtype=keras.backend.floatx())
+            dtype=keras.backend.floatx(),
+        )
         regression = keras.backend.variable(regression)
 
         # compute output
@@ -195,17 +192,20 @@ class TestRegressBoxes(object):
         actual = keras.backend.eval(actual)
 
         # compute expected output
-        expected = np.array([
+        expected = np.array(
             [
-                [0 , 0 , 10  , 10  ],  # 1
-                [51, 51, 100 , 100 ],  # 2
-                [20, 20, 40.4, 40.4],  # 3
+                [
+                    [0, 0, 10, 10],  # 1
+                    [51, 51, 100, 100],  # 2
+                    [20, 20, 40.4, 40.4],  # 3
+                ],
+                [
+                    [20, 20, 40.4, 40.4],  # 3
+                    [0, 0, 10, 10],  # 1
+                    [51, 51, 100, 100],  # 2
+                ],
             ],
-            [
-                [20, 20, 40.4, 40.4],  # 3
-                [0 , 0 , 10  , 10  ],  # 1
-                [51, 51, 100 , 100 ],  # 2
-            ],
-        ], dtype=keras.backend.floatx())
+            dtype=keras.backend.floatx(),
+        )
 
         np.testing.assert_array_almost_equal(actual, expected, decimal=2)

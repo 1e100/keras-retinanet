@@ -21,7 +21,10 @@ import numpy as np
 import json
 
 import progressbar
-assert(callable(progressbar.progressbar)), "Using wrong progressbar module, install 'progressbar2' instead."
+
+assert callable(
+    progressbar.progressbar
+), "Using wrong progressbar module, install 'progressbar2' instead."
 
 
 def evaluate_coco(generator, model, threshold=0.05):
@@ -35,12 +38,14 @@ def evaluate_coco(generator, model, threshold=0.05):
     # start collecting results
     results = []
     image_ids = []
-    for index in progressbar.progressbar(range(generator.size()), prefix='COCO evaluation: '):
+    for index in progressbar.progressbar(
+        range(generator.size()), prefix="COCO evaluation: "
+    ):
         image = generator.load_image(index)
         image = generator.preprocess_image(image)
         image, scale = generator.resize_image(image)
 
-        if keras.backend.image_data_format() == 'channels_first':
+        if keras.backend.image_data_format() == "channels_first":
             image = image.transpose((2, 0, 1))
 
         # run network
@@ -61,10 +66,10 @@ def evaluate_coco(generator, model, threshold=0.05):
 
             # append detection for each positively labeled class
             image_result = {
-                'image_id'    : generator.image_ids[index],
-                'category_id' : generator.label_to_coco_label(label),
-                'score'       : float(score),
-                'bbox'        : box.tolist(),
+                "image_id": generator.image_ids[index],
+                "category_id": generator.label_to_coco_label(label),
+                "score": float(score),
+                "bbox": box.tolist(),
             }
 
             # append detection to results
@@ -77,15 +82,21 @@ def evaluate_coco(generator, model, threshold=0.05):
         return
 
     # write output
-    json.dump(results, open('{}_bbox_results.json'.format(generator.set_name), 'w'), indent=4)
-    json.dump(image_ids, open('{}_processed_image_ids.json'.format(generator.set_name), 'w'), indent=4)
+    json.dump(
+        results, open("{}_bbox_results.json".format(generator.set_name), "w"), indent=4
+    )
+    json.dump(
+        image_ids,
+        open("{}_processed_image_ids.json".format(generator.set_name), "w"),
+        indent=4,
+    )
 
     # load results in COCO evaluation tool
     coco_true = generator.coco
-    coco_pred = coco_true.loadRes('{}_bbox_results.json'.format(generator.set_name))
+    coco_pred = coco_true.loadRes("{}_bbox_results.json".format(generator.set_name))
 
     # run COCO evaluation
-    coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
+    coco_eval = COCOeval(coco_true, coco_pred, "bbox")
     coco_eval.params.imgIds = image_ids
     coco_eval.evaluate()
     coco_eval.accumulate()

@@ -25,8 +25,9 @@ import tensorflow as tf
 
 # Allow relative imports when being executed as script.
 if __name__ == "__main__" and __package__ is None:
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
     import keras_retinanet.bin  # noqa: F401
+
     __package__ = "keras_retinanet.bin"
 
 # Change these to absolute imports if you copy this script outside the keras_retinanet package.
@@ -43,14 +44,30 @@ def get_session():
 
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(description='Script for converting a training model to an inference model.')
+    parser = argparse.ArgumentParser(
+        description="Script for converting a training model to an inference model."
+    )
 
-    parser.add_argument('model_in', help='The model to convert.')
-    parser.add_argument('model_out', help='Path to save the converted model to.')
-    parser.add_argument('--backbone', help='The backbone of the model to convert.', default='resnet50')
-    parser.add_argument('--no-nms', help='Disables non maximum suppression.', dest='nms', action='store_false')
-    parser.add_argument('--no-class-specific-filter', help='Disables class specific filtering.', dest='class_specific_filter', action='store_false')
-    parser.add_argument('--config', help='Path to a configuration parameters .ini file.')
+    parser.add_argument("model_in", help="The model to convert.")
+    parser.add_argument("model_out", help="Path to save the converted model to.")
+    parser.add_argument(
+        "--backbone", help="The backbone of the model to convert.", default="resnet50"
+    )
+    parser.add_argument(
+        "--no-nms",
+        help="Disables non maximum suppression.",
+        dest="nms",
+        action="store_false",
+    )
+    parser.add_argument(
+        "--no-class-specific-filter",
+        help="Disables class specific filtering.",
+        dest="class_specific_filter",
+        action="store_false",
+    )
+    parser.add_argument(
+        "--config", help="Path to a configuration parameters .ini file."
+    )
 
     return parser.parse_args(args)
 
@@ -68,7 +85,7 @@ def main(args=None):
     anchor_parameters = None
     if args.config:
         args.config = read_config_file(args.config)
-        if 'anchor_parameters' in args.config:
+        if "anchor_parameters" in args.config:
             anchor_parameters = parse_anchor_parameters(args.config)
 
     # load the model
@@ -78,11 +95,16 @@ def main(args=None):
     models.check_training_model(model)
 
     # convert the model
-    model = models.convert_model(model, nms=args.nms, class_specific_filter=args.class_specific_filter, anchor_params=anchor_parameters)
+    model = models.convert_model(
+        model,
+        nms=args.nms,
+        class_specific_filter=args.class_specific_filter,
+        anchor_params=anchor_parameters,
+    )
 
     # save model
     model.save(args.model_out)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
