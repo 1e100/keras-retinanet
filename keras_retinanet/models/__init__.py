@@ -34,7 +34,7 @@ class Backbone(object):
     def download_imagenet(self):
         """ Downloads ImageNet weights and returns path to weights file.
         """
-        raise NotImplementedError("download_imagenet method not implemented.")
+        print("download_imagenet method not implemented")
 
     def validate(self):
         """ Checks whether the backbone string is correct.

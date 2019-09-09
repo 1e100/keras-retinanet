@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import numpy as np
-import tensorflow.keras
+from tensorflow import keras
 import keras_retinanet.backend
 
 

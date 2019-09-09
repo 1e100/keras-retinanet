@@ -18,7 +18,7 @@ import numpy as np
 import random
 import warnings
 
-import tensorflow.keras
+from tensorflow import keras
 
 from ..utils.anchors import anchor_targets_bbox, anchors_for_shape, guess_shapes
 from ..utils.config import parse_anchor_parameters

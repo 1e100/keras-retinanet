@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import tensorflow.keras
+from tensorflow import keras
 from .. import initializers
 from .. import layers
 from ..utils.anchors import AnchorParameters
@@ -53,7 +53,7 @@ def default_classification_model(
             filters=classification_feature_size,
             activation="relu",
             name="pyramid_classification_{}".format(i),
-            kernel_initializer=keras.initializers.normal(
+            kernel_initializer=keras.initializers.RandomNormal(
                 mean=0.0, stddev=0.01, seed=None
             ),
             bias_initializer="zeros",
@@ -62,7 +62,7 @@ def default_classification_model(
 
     outputs = keras.layers.Conv2D(
         filters=num_classes * num_anchors,
-        kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
+        kernel_initializer=keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None),
         bias_initializer=initializers.PriorProbability(probability=prior_probability),
         name="pyramid_classification",
         **options
@@ -109,7 +109,7 @@ def default_regression_model(
         "kernel_size": 3,
         "strides": 1,
         "padding": "same",
-        "kernel_initializer": keras.initializers.normal(
+        "kernel_initializer": keras.initializers.RandomNormal(
             mean=0.0, stddev=0.01, seed=None
         ),
         "bias_initializer": "zeros",
@@ -281,18 +281,24 @@ def retinanet(
 ):
     """ Construct a RetinaNet model on top of a backbone.
 
-    This model is the minimum model necessary for training (with the unfortunate exception of anchors as output).
+    This model is the minimum model necessary for training (with the
+    unfortunate exception of anchors as output).
 
     Args
-        inputs                  : keras.layers.Input (or list of) for the input to the model.
+        inputs                  : keras.layers.Input (or list of) for the input
+                                  to the model.
         num_classes             : Number of classes to classify.
         num_anchors             : Number of base anchors.
-        create_pyramid_features : Functor for creating pyramid features given the features C3, C4, C5 from the backbone.
-        submodels               : Submodels to run on each feature map (default is regression and classification submodels).
+        create_pyramid_features : Functor for creating pyramid features given
+                                  the features C3, C4, C5 from the backbone.
+        submodels               : Submodels to run on each feature map (default
+                                  is regression and classification submodels).
         name                    : Name of the model.
 
     Returns
-        A keras.models.Model which takes an image as input and outputs generated anchors and the result from each submodel on every pyramid level.
+        A keras.models.Model which takes an image as input and outputs
+        generated anchors and the result from each submodel on every pyramid
+        level.
 
         The order of the outputs is as defined in submodels:
         ```
@@ -327,21 +333,29 @@ def retinanet_bbox(
     anchor_params=None,
     **kwargs
 ):
-    """ Construct a RetinaNet model on top of a backbone and adds convenience functions to output boxes directly.
+    """ Construct a RetinaNet model on top of a backbone and adds convenience
+    functions to output boxes directly.
 
-    This model uses the minimum retinanet model and appends a few layers to compute boxes within the graph.
-    These layers include applying the regression values to the anchors and performing NMS.
+    This model uses the minimum retinanet model and appends a few layers to
+    compute boxes within the graph.  These layers include applying the
+    regression values to the anchors and performing NMS.
 
     Args
-        model                 : RetinaNet model to append bbox layers to. If None, it will create a RetinaNet model using **kwargs.
-        nms                   : Whether to use non-maximum suppression for the filtering step.
-        class_specific_filter : Whether to use class specific filtering or filter for the best scoring class only.
+        model                 : RetinaNet model to append bbox layers to. If
+                                None, it will create a RetinaNet model using
+                                **kwargs.
+        nms                   : Whether to use non-maximum suppression for the
+                                filtering step.
+        class_specific_filter : Whether to use class specific filtering or
+                                filter for the best scoring class only.
         name                  : Name of the model.
-        anchor_params         : Struct containing anchor parameters. If None, default values are used.
+        anchor_params         : Struct containing anchor parameters. If None,
+                                default values are used.
         *kwargs               : Additional kwargs to pass to the minimal retinanet model.
 
     Returns
-        A keras.models.Model which takes an image as input and outputs the detections on the image.
+        A keras.models.Model which takes an image as input and outputs the
+        detections on the image.
 
         The order is defined as follows:
         ```

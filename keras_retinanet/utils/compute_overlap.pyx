@@ -4,6 +4,7 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Sergey Karayev
 # --------------------------------------------------------
+# cython: language_level=3
 
 cimport cython
 import numpy as np

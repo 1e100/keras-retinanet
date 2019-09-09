@@ -21,7 +21,7 @@ import os
 import sys
 import warnings
 
-import tensorflow.keras as keras
+from tensorflow import keras as keras
 import tensorflow as tf
 
 # Allow relative imports when being executed as script.
@@ -61,14 +61,6 @@ def makedirs(path):
             raise
 
 
-def get_session():
-    """ Construct a modified tf session.
-    """
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    return tf.Session(config=config)
-
-
 def model_with_weights(model, weights, skip_mismatch):
     """ Load weights for model.
 
@@ -104,7 +96,8 @@ def create_models(
     Returns
         model            : The base model. This is also the model that is saved in snapshots.
         training_model   : The training model. If multi_gpu=0, this is identical to model.
-        prediction_model : The model wrapped with utility functions to perform object detection (applies regression values and performs NMS).
+        prediction_model : The model wrapped with utility functions to perform
+                           object detection (applies regression values and performs NMS).
     """
 
     modifier = freeze_model if freeze_backbone else None
@@ -144,7 +137,7 @@ def create_models(
     # compile model
     training_model.compile(
         loss={"regression": losses.smooth_l1(), "classification": losses.focal()},
-        optimizer=keras.optimizers.adam(lr=lr, clipnorm=0.001),
+        optimizer=keras.optimizers.Adam(lr=lr, clipnorm=0.001),
     )
 
     return model, training_model, prediction_model
@@ -600,7 +593,8 @@ def main(args=None):
     # optionally choose specific GPU
     if args.gpu:
         os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
-    keras.backend.tensorflow_backend.set_session(get_session())
+
+    # keras.backend.tensorflow_backend.set_session(get_session())
 
     # optionally load config parameters
     if args.config:

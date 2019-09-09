@@ -55,8 +55,6 @@ setuptools.setup(
     cmdclass={"build_ext": BuildExtension},
     packages=setuptools.find_packages(),
     install_requires=[
-        "keras",
-        "keras-resnet==0.1.0",
         "six",
         "scipy",
         "cython",
