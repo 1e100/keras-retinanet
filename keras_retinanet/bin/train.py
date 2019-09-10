@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!tc/usr/bin/env python3
 
 """
 Copyright 2017-2018 Fizyr (https://fizyr.com)
@@ -477,7 +477,7 @@ def parse_args(args):
         type=str,
     )
     parser.add_argument(
-        "--batch-size", help="Size of the batches.", default=1, type=int
+        "--batch-size", help="Size of the batches.", default=10, type=int
     )
     parser.add_argument(
         "--gpu", help="Id of the GPU to use (as reported by nvidia-smi)."
@@ -497,7 +497,7 @@ def parse_args(args):
         "--epochs", help="Number of epochs to train.", type=int, default=50
     )
     parser.add_argument(
-        "--steps", help="Number of steps per epoch.", type=int, default=10000
+        "--steps", help="Number of steps per epoch.", type=int, default=1000
     )
     parser.add_argument("--lr", help="Learning rate.", type=float, default=1e-5)
     parser.add_argument(
@@ -536,13 +536,13 @@ def parse_args(args):
         "--image-min-side",
         help="Rescale the image so the smallest side is min_side.",
         type=int,
-        default=800,
+        default=300,
     )
     parser.add_argument(
         "--image-max-side",
         help="Rescale the image if the largest side is larger than max_side.",
         type=int,
-        default=1333,
+        default=300,
     )
     parser.add_argument(
         "--config", help="Path to a configuration parameters .ini file."
@@ -572,13 +572,14 @@ def parse_args(args):
         "--max-queue-size",
         help="Queue length for multiprocessing workers in fit_generator.",
         type=int,
-        default=10,
+        default=32,
     )
 
     return check_args(parser.parse_args(args))
 
 
 def main(args=None):
+    keras.backend.set_image_data_format("channels_first")
     # parse arguments
     if args is None:
         args = sys.argv[1:]

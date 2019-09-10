@@ -29,7 +29,7 @@ class Evaluate(keras.callbacks.Callback):
         score_threshold=0.05,
         max_detections=100,
         save_path=None,
-        tensorboard=None,
+        tensorboard: keras.callbacks.TensorBoard = None,
         weighted_average=False,
         verbose=1,
     ):
@@ -88,14 +88,14 @@ class Evaluate(keras.callbacks.Callback):
         else:
             self.mean_ap = sum(precisions) / sum(x > 0 for x in total_instances)
 
-        if self.tensorboard is not None and self.tensorboard.writer is not None:
+        if self.tensorboard is not None:
             import tensorflow as tf
 
             summary = tf.Summary()
             summary_value = summary.value.add()
             summary_value.simple_value = self.mean_ap
             summary_value.tag = "mAP"
-            self.tensorboard.writer.add_summary(summary, epoch)
+            self.tensorboard.add_summary(summary, epoch)
 
         logs["mAP"] = self.mean_ap
 
