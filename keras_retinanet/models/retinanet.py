@@ -99,8 +99,10 @@ def default_regression_model(
     Args
         num_values              : Number of values to regress.
         num_anchors             : Number of anchors to regress for each feature level.
-        pyramid_feature_size    : The number of filters to expect from the feature pyramid levels.
-        regression_feature_size : The number of filters to use in the layers in the regression submodel.
+        pyramid_feature_size    : The number of filters to expect from the
+                                  feature pyramid levels.
+        regression_feature_size : The number of filters to use in the layers in
+                                  the regression submodel.
         name                    : The name of the submodel.
 
     Returns
