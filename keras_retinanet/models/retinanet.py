@@ -32,10 +32,14 @@ def default_classification_model(
     """ Creates the default regression submodel.
 
     Args
-        num_classes                 : Number of classes to predict a score for at each feature level.
-        num_anchors                 : Number of anchors to predict classification scores for at each feature level.
-        pyramid_feature_size        : The number of filters to expect from the feature pyramid levels.
-        classification_feature_size : The number of filters to use in the layers in the classification submodel.
+        num_classes                 : Number of classes to predict a score for
+                                      at each feature level.
+        num_anchors                 : Number of anchors to predict
+                                      classification scores for at each feature level.
+        pyramid_feature_size        : The number of filters to expect from the
+                                      feature pyramid levels.
+        classification_feature_size : The number of filters to use in the
+                                      layers in the classification submodel.
         name                        : The name of the submodel.
 
     Returns

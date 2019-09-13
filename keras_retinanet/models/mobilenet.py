@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import tensorflow.keras
-from keras.applications import mobilenet
-from keras.utils import get_file
+from tensorflow import keras
+from tensorflow.keras.applications import mobilenet
+from tensorflow.keras.utils import get_file
 from ..utils.image import preprocess_image
 
 from . import retinanet
@@ -24,8 +24,7 @@ from . import Backbone
 
 
 class MobileNetBackbone(Backbone):
-    """ Describes backbone information and provides utility functions.
-    """
+    """ Describes backbone information and provides utility functions. """
 
     allowed_backbones = ["mobilenet128", "mobilenet160", "mobilenet192", "mobilenet224"]
 
@@ -35,18 +34,18 @@ class MobileNetBackbone(Backbone):
         return mobilenet_retinanet(*args, backbone=self.backbone, **kwargs)
 
     def download_imagenet(self):
-        """ Download pre-trained weights for the specified backbone name.
-        This name is in the format mobilenet{rows}_{alpha} where rows is the
+        """ Download pre-trained weights for the specified backbone name.  This
+        name is in the format mobilenet{rows}_{alpha} where rows is the
         imagenet shape dimension and 'alpha' controls the width of the network.
-        For more info check the explanation from the keras mobilenet script itself.
-        """
+        For more info check the explanation from the keras mobilenet script
+        itself. """
 
         alpha = float(self.backbone.split("_")[1])
         rows = int(self.backbone.split("_")[0].replace("mobilenet", ""))
 
         # load weights
         if keras.backend.image_data_format() == "channels_first":
-            raise ValueError('Weights for "channels_last" format ' "are not available.")
+            raise ValueError('Weights for "channels_first" format are not available.')
         if alpha == 1.0:
             alpha_text = "1_0"
         elif alpha == 0.75:
@@ -75,8 +74,8 @@ class MobileNetBackbone(Backbone):
             )
 
     def preprocess_image(self, inputs):
-        """ Takes as input an image and prepares it for being passed through the network.
-        """
+        """ Takes as input an image and prepares it for being passed through
+        the network.  """
         return preprocess_image(inputs, mode="tf")
 
 
@@ -87,9 +86,13 @@ def mobilenet_retinanet(
 
     Args
         num_classes: Number of classes to predict.
-        backbone: Which backbone to use (one of ('mobilenet128', 'mobilenet160', 'mobilenet192', 'mobilenet224')).
-        inputs: The inputs to the network (defaults to a Tensor of shape (None, None, 3)).
-        modifier: A function handler which can modify the backbone before using it in retinanet (this can be used to freeze backbone layers for example).
+        backbone: Which backbone to use (one of ('mobilenet128',
+            'mobilenet160', 'mobilenet192', 'mobilenet224')).
+        inputs: The inputs to the network (defaults to a Tensor of shape (None,
+            None, 3)).
+        modifier: A function handler which can modify the backbone before using
+            it in retinanet (this can be used to freeze backbone layers for
+            example).
 
     Returns
         RetinaNet model with a MobileNet backbone.

@@ -392,8 +392,7 @@ def check_args(parsed_args):
 
 
 def parse_args(args):
-    """ Parse the arguments.
-    """
+    """ Parse the arguments. """
     parser = argparse.ArgumentParser(
         description="Simple training script for training a RetinaNet network."
     )
@@ -454,7 +453,8 @@ def parse_args(args):
     group.add_argument("--snapshot", help="Resume training from a snapshot.")
     group.add_argument(
         "--imagenet-weights",
-        help="Initialize the model with pretrained imagenet weights. This is the default behaviour.",
+        help="Initialize the model with pretrained imagenet weights. This is "
+        "the default behaviour.",
         action="store_const",
         const=True,
         default=True,
@@ -536,13 +536,13 @@ def parse_args(args):
         "--image-min-side",
         help="Rescale the image so the smallest side is min_side.",
         type=int,
-        default=300,
+        default=256,
     )
     parser.add_argument(
         "--image-max-side",
         help="Rescale the image if the largest side is larger than max_side.",
         type=int,
-        default=300,
+        default=256,
     )
     parser.add_argument(
         "--config", help="Path to a configuration parameters .ini file."
@@ -579,7 +579,7 @@ def parse_args(args):
 
 
 def main(args=None):
-    keras.backend.set_image_data_format("channels_first")
+    keras.backend.set_image_data_format("channels_last")
     # parse arguments
     if args is None:
         args = sys.argv[1:]
